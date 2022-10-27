@@ -3,7 +3,7 @@ package com.bridgelabz.bookstoreapp.service;
 import com.bridgelabz.bookstoreapp.Util.EmailSenderService;
 import com.bridgelabz.bookstoreapp.Util.TokenUtility;
 import com.bridgelabz.bookstoreapp.dto.UserDTO;
-import com.bridgelabz.bookstoreapp.exception.UserException;
+import com.bridgelabz.bookstoreapp.exception.BookStoreException;
 import com.bridgelabz.bookstoreapp.model.User;
 import com.bridgelabz.bookstoreapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class UserService implements IUserService {
     @Override
     public User getByToken(String token) {
         int id = tokenUtility.decodeJWT(token);
-        User user = userRepository.findById(id).orElseThrow(() -> new UserException("User data not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new BookStoreException("User data not found"));
         return user;
     }
 
@@ -52,11 +52,11 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String forgetPassword(String email, String password, String newPassword) {
+    public String forgetPassword(String email, String oldPassword, String newPassword) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()){
-            String oldPassword = user.get().getPassword();
-            if (oldPassword.equals(password)){
+            String password = user.get().getPassword();
+            if (password.equals(oldPassword)){
                 User user1 = user.get();
                 user1.setPassword(newPassword);
                 userRepository.save(user1);
