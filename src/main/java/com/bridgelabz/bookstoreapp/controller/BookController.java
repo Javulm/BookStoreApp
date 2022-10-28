@@ -3,7 +3,7 @@ package com.bridgelabz.bookstoreapp.controller;
 import com.bridgelabz.bookstoreapp.dto.BookDTO;
 import com.bridgelabz.bookstoreapp.dto.ResponseDTO;
 import com.bridgelabz.bookstoreapp.model.Book;
-import com.bridgelabz.bookstoreapp.service.BookService;
+import com.bridgelabz.bookstoreapp.service.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("book")
 public class BookController {
     @Autowired
-    private BookService bookService;
+    private IBookService bookService;
 
     @PostMapping("/addbook")
     public ResponseEntity<ResponseDTO> addBook(@Valid @RequestBody BookDTO bookDTO){

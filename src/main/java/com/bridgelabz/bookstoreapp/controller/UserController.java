@@ -3,7 +3,7 @@ package com.bridgelabz.bookstoreapp.controller;
 import com.bridgelabz.bookstoreapp.dto.ResponseDTO;
 import com.bridgelabz.bookstoreapp.dto.UserDTO;
 import com.bridgelabz.bookstoreapp.model.User;
-import com.bridgelabz.bookstoreapp.service.UserService;
+import com.bridgelabz.bookstoreapp.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import javax.validation.Valid;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
     @PostMapping("/registration")
     public ResponseEntity<ResponseDTO> userRegistration(@Valid @RequestBody UserDTO userDTO) {

@@ -1,5 +1,7 @@
 package com.bridgelabz.bookstoreapp.dto;
 
+import com.bridgelabz.bookstoreapp.model.Book;
+import com.bridgelabz.bookstoreapp.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartDTO {
-    private Integer userId;
-    private Integer BookId;
-    private Integer quantity;
+    private int userId;
+    private int BookId;
+    private int quantity;
 }
