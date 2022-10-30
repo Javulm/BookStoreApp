@@ -17,7 +17,7 @@ public class UserDTO {
     private String lastName;
 
     @Email(message = "Invalid Email")
-    private String Email;
+    private String email;
 
     @Pattern(regexp = "^([0-9]{2,}\\s)?[0-9]{10}$", message = "Phone number is invalid")
     @NotEmpty(message = "Phone number cannot be null")

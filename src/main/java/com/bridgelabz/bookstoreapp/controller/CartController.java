@@ -40,10 +40,10 @@ public class CartController {
         return new ResponseEntity<>(responseDTO, HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/updateCartQuantity")
+    @PutMapping("/updatecartquantity")
     public ResponseEntity<ResponseDTO> updateQuantity(@RequestHeader int cartId, @RequestHeader int quantity) {
         String cart = cartService.updateQuantity(cartId, quantity);
-        ResponseDTO dto = new ResponseDTO("Quantity for book record updated successfully !", cart);
+        ResponseDTO dto = new ResponseDTO("Quantity for book record updated successfully.", cart);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 

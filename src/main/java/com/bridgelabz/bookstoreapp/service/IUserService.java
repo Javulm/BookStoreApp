@@ -11,4 +11,6 @@ public interface IUserService {
     String userLogin(String email, String password);
     String forgetPassword(String email, String password,String newPassword);
     User updateUserDataByToken(String token, UserDTO userDTO);
+    String deleteUserById(int userId);
+    public List<User> getAllUser();
 }

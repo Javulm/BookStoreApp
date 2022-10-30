@@ -15,20 +15,17 @@ import java.util.Optional;
 public class BookService implements IBookService {
     @Autowired
     private BookRepository bookRepository;
-    @Autowired
-    private TokenUtility tokenUtility;
 
     @Override
     public String addBooks(BookDTO bookDTO) {
         Book book = new Book(bookDTO);
         bookRepository.save(book);
-        return tokenUtility.createToken(book.getBookId());
+        return "Book added successfully";
     }
 
     @Override
     public Book findBookById(int bookId) {
-        Book book = bookRepository.findById(bookId).orElseThrow(()-> new BookStoreException("Book not found"));
-        return book;
+        return bookRepository.findById(bookId).orElseThrow(()-> new BookStoreException("Book not found"));
     }
 
     @Override
@@ -36,7 +33,7 @@ public class BookService implements IBookService {
         List<Book> book = bookRepository.findBookByName(bookName);
         if (!book.isEmpty()) {
             return book;
-        } else throw new BookStoreException("Book with name " + bookName + " does not exists.");
+        } else throw new BookStoreException("Book with name " + bookName + " is not available.");
     }
 
     @Override
@@ -49,12 +46,14 @@ public class BookService implements IBookService {
 
 
     @Override
-    public String changeBookQuantity(int bookId, int bookQuantity) {
+    public String changeBookQuantity(int bookId, int addBookQuantity,int subQuantity ) {
         Optional<Book> book = bookRepository.findById(bookId);
         if (book.isPresent()) {
-            Book book1 = book.get();
-            book1.setBookQuantity(bookQuantity);
-            bookRepository.save(book1);
+            if(book.get().getBookQuantity() > 0){
+                book.get().setBookQuantity(book.get().getBookQuantity()-subQuantity);
+            }else throw new BookStoreException("Book quantity cannot be zero");
+            book.get().setBookQuantity(book.get().getBookQuantity()+addBookQuantity);
+            bookRepository.save(book.get());
             return "Book quantity has been changed";
         } else throw new BookStoreException("Book record does not exists");
     }
@@ -63,9 +62,8 @@ public class BookService implements IBookService {
     public String ChangeBookPrice(int bookId, double bookPrice) {
         Optional<Book> book = bookRepository.findById(bookId);
         if (book.isPresent()) {
-            Book book1 = book.get();
-            book1.setBookPrice(bookPrice);
-            bookRepository.save(book1);
+            book.get().setBookPrice(bookPrice);
+            bookRepository.save(book.get());
             return "Book price has been changed";
         } else throw new BookStoreException("Book record does not exists");
     }

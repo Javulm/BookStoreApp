@@ -37,8 +37,8 @@ public class BookController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
     @PostMapping("/changequantity")
-    public ResponseEntity<ResponseDTO> changeBookQuantity(@RequestParam int bookId,@RequestParam int bookQuantity){
-        String message = bookService.changeBookQuantity(bookId, bookQuantity);
+    public ResponseEntity<ResponseDTO> changeBookQuantity(@RequestParam int bookId,@RequestParam int addBookQuantity,@RequestParam int subBookQuantity){
+        String message = bookService.changeBookQuantity(bookId, addBookQuantity,subBookQuantity);
         ResponseDTO responseDTO = new ResponseDTO("Book Quantity Updated", message);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }

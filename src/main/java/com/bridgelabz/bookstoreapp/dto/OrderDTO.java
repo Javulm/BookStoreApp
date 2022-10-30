@@ -5,11 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class CartDTO {
-    private int userId;
-    private int BookId;
+@NoArgsConstructor
+public class OrderDTO {
+
     private int quantity;
-    private double totalPrice;
+
+    private String address;
+
+    private boolean cancel;
 }

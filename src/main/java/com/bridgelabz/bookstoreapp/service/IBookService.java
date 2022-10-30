@@ -12,7 +12,7 @@ public interface IBookService {
     List<Book> findBookByName(String bookName);
     String updateBook(int bookId, BookDTO bookDTO);
 
-    String changeBookQuantity(int bookId, int bookQuantity);
+    String changeBookQuantity(int bookId, int addBookQuantity, int subQuantity);
 
     String ChangeBookPrice(int bookId, double bookPrice);
 

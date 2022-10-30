@@ -21,15 +21,9 @@ public class User {
     private String number;
     private String password;
 
-    public User(UserDTO userDTO) {
-        this.updateUser(userDTO);
-    }
-
     public void updateUser(UserDTO userDTO) {
         this.firstName = userDTO.getFirstName();
         this.lastName = userDTO.getLastName();
-        this.Email = userDTO.getEmail();
         this.number = userDTO.getNumber();
-        this.password = userDTO.getPassword();
     }
 }

@@ -1,6 +1,5 @@
 package com.bridgelabz.bookstoreapp.model;
 
-import com.bridgelabz.bookstoreapp.dto.CartDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ public class Cart {
     @GeneratedValue
     private int cartId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -26,10 +25,18 @@ public class Cart {
     private Book book;
 
     private int quantity;
+    private double totalPrice;
 
-    public Cart(User user, Book book, int quantity) {
+    public Cart(User user, Book book, int quantity ,double totalPrice) {
         this.user = user;
         this.book = book;
         this.quantity = quantity;
+        this.totalPrice = totalPrice;
+    }
+    public void updateCart(User user, Book book, int quantity, double totalPrice) {
+        this.user = user;
+        this.book = book;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
     }
 }
