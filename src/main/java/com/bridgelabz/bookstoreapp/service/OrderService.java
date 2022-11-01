@@ -80,9 +80,12 @@ public class OrderService implements IOrderService {
         User user = userService.getByToken(token);
         if (user != null) {
             Optional<Order> order = orderRepository.findById(orderId);
+            Optional<Book> book = bookRepository.findById(order.get().getBook().getBookId());
             if (order.isPresent()) {
                 order.get().setCancel(true);
                 orderRepository.save(order.get());
+                book.get().setBookQuantity(order.get().getQuantity()+ book.get().getBookQuantity());
+                bookRepository.save(book.get());
                 emailSenderService.sendEmail(user.getEmail(), "Order details", "your order is cancelled");
                 return "Order cancelled";
             } else throw new BookStoreException("Order details not found");
