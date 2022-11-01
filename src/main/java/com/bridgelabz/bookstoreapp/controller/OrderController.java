@@ -18,8 +18,8 @@ public class OrderController {
     private IOrderService orderService;
 
     @PostMapping("/placeorder")
-    public ResponseEntity<ResponseDTO> placeOrder(@RequestHeader String token, @RequestBody OrderDTO orderDTO){
-        String order= orderService.placeOrder(token, orderDTO);
+    public ResponseEntity<ResponseDTO> placeOrder(@RequestHeader String token, @RequestHeader int cartId, @RequestBody OrderDTO orderDTO){
+        String order= orderService.placeOrder(token,cartId, orderDTO);
         ResponseDTO responseDTO = new ResponseDTO("Order placed", order);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
@@ -31,13 +31,13 @@ public class OrderController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<ResponseDTO> getAllOrders(@RequestHeader boolean cancel){
-        List<Order> order= orderService.getAllOrders(cancel);
+    public ResponseEntity<ResponseDTO> getAllOrders(){
+        List<Order> order= orderService.getAllOrders();
         ResponseDTO responseDTO = new ResponseDTO("order details", order);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/cancel")
+    @PutMapping("/cancel")
     public ResponseEntity<ResponseDTO> cancelOrder(@RequestHeader String token, @RequestHeader int orderId){
         String order= orderService.cancelOrder(token,orderId);
         ResponseDTO responseDTO = new ResponseDTO("order details", order);

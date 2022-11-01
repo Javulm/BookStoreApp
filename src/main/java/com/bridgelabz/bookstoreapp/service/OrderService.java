@@ -37,12 +37,12 @@ public class OrderService implements IOrderService {
     private TokenUtility tokenUtility;
 
     @Override
-    public String placeOrder(String token, OrderDTO orderDTO) {
+    public String placeOrder(String token, int cartId, OrderDTO orderDTO) {
         User user = userService.getByToken(token);
-        Optional<Cart> cart = cartService.getAllCartItemsForUser(token);
+        Optional<Cart> cart = cartService.getCartByCartId(cartId);
         Book bookFromCart = cart.get().getBook();
         Book bookFromBook = bookService.findBookById(cart.get().getBook().getBookId());
-        double orderPrice= cart.get().getTotalPrice();
+        double orderPrice = orderDTO.getQuantity() * bookFromBook.getBookPrice();
         Order newOrder = new Order(orderPrice, orderDTO.getQuantity(), orderDTO.getAddress(), user, bookFromCart, orderDTO.isCancel());
         if (bookFromCart != null && user != null) {
             if (orderDTO.getQuantity() <= bookFromBook.getBookQuantity()) {
@@ -50,18 +50,17 @@ public class OrderService implements IOrderService {
                 cart.get().setQuantity(cart.get().getQuantity() - orderDTO.getQuantity());
                 cartRepository.save(cart.get());
                 int size = cart.get().getQuantity();
-                if(size<=0){
+                if (size <= 0) {
                     cartService.removeFromCart(cart.get().getCartId());
-                }else {
-                    bookFromBook.setBookQuantity(bookFromBook.getBookQuantity() - orderDTO.getQuantity());
-                    bookRepository.save(bookFromBook);
                 }
+                bookFromBook.setBookQuantity(bookFromBook.getBookQuantity() - orderDTO.getQuantity());
+                bookRepository.save(bookFromBook);
                 emailSenderService.sendEmail(user.getEmail(), "Order confirmation Mail", "Your Order is successfully placed.\n Order details\n"
-                        +"Book Name :"+ newOrder.getBook().getBookName()+"\n"
-                        +"Book Description :"+ newOrder.getBook().getBookDescription()+"\n"
-                        +"Book Price :"+ newOrder.getBook().getBookPrice()+"\n"
-                        +"Order Quantity :"+orderDTO.getQuantity()
-                        +"\n"+"Order Price :"+ orderPrice);
+                        + "Book Name :" + newOrder.getBook().getBookName() + "\n"
+                        + "Book Description :" + newOrder.getBook().getBookDescription() + "\n"
+                        + "Book Price :" + newOrder.getBook().getBookPrice() + "\n"
+                        + "Order Quantity :" + orderDTO.getQuantity()
+                        + "\n" + "Order Price :" + orderPrice);
                 return "Your Order is placed";
             } else throw new BookStoreException("Requested quantity is not available");
         } else throw new BookStoreException("Book or User doesn't exists");
@@ -91,7 +90,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<Order> getAllOrders(boolean cancel) {
-        return orderRepository.getAllOrders(cancel);
+    public List<Order> getAllOrders() {
+        return orderRepository.getAllOrders();
     }
 }

@@ -13,6 +13,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query(value = "select * from order_details where user_id =:userId", nativeQuery = true)
     List<Order> findAllByUserId(int userId);
 
-    @Query(value = "select * from order_details where cancel =:cancel", nativeQuery = true)
-    List<Order> getAllOrders(boolean cancel);
+    @Query(value = "select * from order_details where cancel =:false", nativeQuery = true)
+    List<Order> getAllOrders();
 }

@@ -3,7 +3,6 @@ package com.bridgelabz.bookstoreapp.controller;
 import com.bridgelabz.bookstoreapp.dto.CartDTO;
 import com.bridgelabz.bookstoreapp.dto.ResponseDTO;
 import com.bridgelabz.bookstoreapp.model.Cart;
-import com.bridgelabz.bookstoreapp.service.CartService;
 import com.bridgelabz.bookstoreapp.service.ICartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +27,7 @@ public class CartController {
 
     @GetMapping("/getbytoken")
     public ResponseEntity<ResponseDTO> getCartDetailsByToken(@RequestHeader String token) {
-        Optional<Cart> cart = cartService.getAllCartItemsForUser(token);
+        List<Cart> cart = cartService.getAllCartItemsForUser(token);
         ResponseDTO responseDTO = new ResponseDTO("Cart details retrieved successfully", cart);
         return new ResponseEntity<>(responseDTO, HttpStatus.ACCEPTED);
     }
@@ -41,8 +40,8 @@ public class CartController {
     }
 
     @PutMapping("/updatecartquantity")
-    public ResponseEntity<ResponseDTO> updateQuantity(@RequestHeader int cartId, @RequestHeader int quantity) {
-        String cart = cartService.updateQuantity(cartId, quantity);
+    public ResponseEntity<ResponseDTO> updateQuantity(@RequestHeader String token, @RequestHeader int cartId, @RequestHeader int quantity) {
+        String cart = cartService.updateQuantity(token, cartId, quantity);
         ResponseDTO dto = new ResponseDTO("Quantity for book record updated successfully.", cart);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

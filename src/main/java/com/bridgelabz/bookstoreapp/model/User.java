@@ -1,5 +1,6 @@
 package com.bridgelabz.bookstoreapp.model;
 
+import com.bridgelabz.bookstoreapp.dto.UpdateUserDTO;
 import com.bridgelabz.bookstoreapp.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +22,9 @@ public class User {
     private String number;
     private String password;
 
-    public void updateUser(UserDTO userDTO) {
-        this.firstName = userDTO.getFirstName();
-        this.lastName = userDTO.getLastName();
-        this.number = userDTO.getNumber();
+    public void updateUser(UpdateUserDTO updateUserDTO) {
+        this.firstName = updateUserDTO.getFirstName();
+        this.lastName = updateUserDTO.getLastName();
+        this.number = updateUserDTO.getNumber();
     }
 }

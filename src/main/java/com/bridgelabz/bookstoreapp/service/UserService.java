@@ -2,6 +2,7 @@ package com.bridgelabz.bookstoreapp.service;
 
 import com.bridgelabz.bookstoreapp.Util.EmailSenderService;
 import com.bridgelabz.bookstoreapp.Util.TokenUtility;
+import com.bridgelabz.bookstoreapp.dto.UpdateUserDTO;
 import com.bridgelabz.bookstoreapp.dto.UserDTO;
 import com.bridgelabz.bookstoreapp.exception.BookStoreException;
 import com.bridgelabz.bookstoreapp.model.User;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class UserService implements IUserService {
@@ -23,6 +25,7 @@ public class UserService implements IUserService {
     private TokenUtility tokenUtility;
     @Autowired
     private EmailSenderService emailSenderService;
+    Integer otp= null;
 
 
     @Override
@@ -58,7 +61,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String forgetPassword(String email, String oldPassword, String newPassword) {
+    public String resetPassword(String email, String oldPassword, String newPassword) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
             String password = user.get().getPassword();
@@ -74,9 +77,41 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateUserDataByToken(String token, UserDTO userDTO) {
+    public String forgetPassword(String email, int Otp, String password) {
+        Optional<User> user = userRepository.findByEmail(email);
+        int otp = this.otp;
+        if (user.isPresent()) {
+            if (Otp ==otp) {
+                User user1 = user.get();
+                user1.setPassword(password);
+                userRepository.save(user1);
+                emailSenderService.sendEmail(user.get().getEmail(),"forget password mail", "Password changed successfully");
+                return "password changed";
+            }else throw new BookStoreException("Please enter correct otp");
+        }else throw new BookStoreException("User not found");
+    }
+    @Override
+    public void otpGenerator(){
+        Random rnd = new Random();
+        this.otp = rnd.nextInt(999999);
+    }
+    @Override
+    public String sendOTP(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            this.otpGenerator();
+            int OTP = this.otp;
+            emailSenderService.sendEmail(user.get().getEmail(), "OTP for password", "Please use " + OTP + " as OTP to change password");
+        }else throw new BookStoreException("User not found");
+        return "Otp sent to the registered mail Id";
+    }
+
+
+
+    @Override
+    public User updateUserDataByToken(String token, UpdateUserDTO updateUserDTO) {
         User user = this.getByToken(token);
-        user.updateUser(userDTO);
+        user.updateUser(updateUserDTO);
         emailSenderService.sendEmail(user.getEmail(), "Update mail", "User data updated successfully");
         return userRepository.save(user);
     }

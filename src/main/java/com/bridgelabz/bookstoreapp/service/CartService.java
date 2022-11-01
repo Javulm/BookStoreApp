@@ -33,18 +33,9 @@ public class CartService implements ICartService {
         Optional<Book> book = bookRepository.findById(cartDTO.getBookId());
         if (user.isPresent()) {
             if (book.isPresent() && book.get().getBookQuantity() >= cartDTO.getQuantity()) {
-                Optional<Cart> cart = cartRepository.findCartByUser(cartDTO.getUserId());
-                if(user.get().getUserId() == cart.get().getUser().getUserId() && cart.isPresent() && cart.get().getBook().getBookId() == cartDTO.getBookId()){
-                        cart.get().setQuantity(cart.get().getQuantity() + cartDTO.getQuantity());
-                        cartRepository.save(cart.get());
-                        double cartPrice = cart.get().getBook().getBookPrice() * cart.get().getQuantity();
-                        cart.get().updateCart(user.get(), book.get(), cart.get().getQuantity(), cartPrice);
-                        cartRepository.save(cart.get());
-                } else {
-                    double cartPrice = book.get().getBookPrice() * cartDTO.getQuantity();
-                    Cart cart1 = new Cart(user.get(), book.get(), cartDTO.getQuantity(), cartPrice);
-                    cartRepository.save(cart1);
-                }
+                double cartPrice = book.get().getBookPrice() * cartDTO.getQuantity();
+                Cart cart1 = new Cart(user.get(), book.get(), cartDTO.getQuantity(), cartPrice);
+                cartRepository.save(cart1);
                 return "your item is added to the cart";
             } else throw new BookStoreException("Book does not exists or out of stock");
         } else throw new BookStoreException("User does not exists");
@@ -61,26 +52,34 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public String updateQuantity(int cartId, int quantity) {
+    public String updateQuantity(String token, int cartId, int quantity) {
+        int userId = tokenUtility.decodeJWT(token);
+        Optional<User> user = userRepository.findById(userId);
         Optional<Cart> cart = cartRepository.findById(cartId);
         Optional<Book> book = bookRepository.findById(cart.get().getBook().getBookId());
-        if (cart.isPresent()) {
-            if (quantity <= book.get().getBookQuantity()) {
-                cart.get().setQuantity(quantity);
-                cart.get().setTotalPrice(book.get().getBookPrice() * cart.get().getQuantity());
-                cartRepository.save(cart.get());
-                return "cart quantity updated";
-            } else throw new BookStoreException("Requested quantity is not available or out of stock");
-        } else throw new BookStoreException("Cart Record doesn't exists");
+        if (user.isPresent()) {
+                if (cart.isPresent() && user.get().getUserId() == cart.get().getUser().getUserId()) {
+                    if (quantity <= book.get().getBookQuantity()) {
+                        cart.get().setQuantity(quantity);
+                        cart.get().setTotalPrice(book.get().getBookPrice() * cart.get().getQuantity());
+                        cartRepository.save(cart.get());
+                        return "cart quantity updated";
+                    } else throw new BookStoreException("Requested quantity is not available or out of stock");
+                } else throw new BookStoreException("Cart Record doesn't exists");
+        } else throw new BookStoreException("User not found");
     }
 
     @Override
-    public Optional<Cart> getAllCartItemsForUser(String token) {
+    public List<Cart> getAllCartItemsForUser(String token) {
         int userId = tokenUtility.decodeJWT(token);
-        Optional<Cart> cart = cartRepository.findCartByUser(userId);
-        if (cart.isPresent()) {
+        List<Cart> cart = cartRepository.findCartByUser(userId);
+        if (!cart.isEmpty()) {
             return cart;
         } else throw new BookStoreException("Didn't find any record for this particular cartId");
+    }
+    public Optional<Cart> getCartByCartId(int cartId){
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        return cart;
     }
 
     @Override

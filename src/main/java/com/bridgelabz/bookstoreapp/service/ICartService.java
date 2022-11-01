@@ -9,7 +9,8 @@ import java.util.Optional;
 public interface ICartService {
     String addToCart(CartDTO cartDTO);
     String removeFromCart(int cartId);
-    String updateQuantity(int cartId, int quantity);
-    Optional<Cart> getAllCartItemsForUser(String token);
+    String updateQuantity(String token, int cartId, int quantity);
+    List<Cart> getAllCartItemsForUser(String token);
+    Optional<Cart> getCartByCartId(int cartId);
     List<Cart> getAllCartItems();
 }

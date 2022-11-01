@@ -1,6 +1,7 @@
 package com.bridgelabz.bookstoreapp.controller;
 
 import com.bridgelabz.bookstoreapp.dto.ResponseDTO;
+import com.bridgelabz.bookstoreapp.dto.UpdateUserDTO;
 import com.bridgelabz.bookstoreapp.dto.UserDTO;
 import com.bridgelabz.bookstoreapp.model.User;
 import com.bridgelabz.bookstoreapp.service.IUserService;
@@ -40,18 +41,23 @@ public class UserController {
     }
 
     @PutMapping("/update/{token}")
-    public ResponseEntity<ResponseDTO> updateUserById(@PathVariable String token, @Valid @RequestBody UserDTO userDTO) {
-        User updateUser = userService.updateUserDataByToken(token, userDTO);
+    public ResponseEntity<ResponseDTO> updateUserById(@PathVariable String token, @Valid @RequestBody UpdateUserDTO updateUserDTO) {
+        User updateUser = userService.updateUserDataByToken(token, updateUserDTO);
         ResponseDTO responseDTO = new ResponseDTO("User data updated successfully", updateUser);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/forgotpassword")
-    public ResponseEntity<String> forgotPassword(@RequestHeader String email, @RequestHeader String password, @RequestHeader String newPassword) {
-        String response = userService.forgetPassword(email, password, newPassword);
+    @PostMapping("/resetpassword")
+    public ResponseEntity<String> resetPassword(@RequestHeader String email, @RequestHeader String password, @RequestHeader String newPassword) {
+        String response = userService.resetPassword(email, password, newPassword);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/forgetpassword")
+    public ResponseEntity<String> resetPassword(@RequestHeader String email, @RequestHeader int otp, @RequestHeader String newPassword) {
+        String response = userService.forgetPassword(email, otp, newPassword);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUserById(@RequestHeader int userId) {
         String response = userService.deleteUserById(userId);
@@ -64,4 +70,10 @@ public class UserController {
         ResponseDTO responseDTO = new ResponseDTO("User data", user);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
+    @GetMapping("/otp")
+    public ResponseEntity<String> sendOtp(@RequestHeader String email) {
+        String response = userService.sendOTP(email);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
