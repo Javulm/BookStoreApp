@@ -42,24 +42,19 @@ public class OrderService implements IOrderService {
         Optional<Cart> cart = cartService.getCartByCartId(cartId);
         Book bookFromCart = cart.get().getBook();
         Book bookFromBook = bookService.findBookById(cart.get().getBook().getBookId());
-        double orderPrice = orderDTO.getQuantity() * bookFromBook.getBookPrice();
-        Order newOrder = new Order(orderPrice, orderDTO.getQuantity(), orderDTO.getAddress(), user, bookFromCart, orderDTO.isCancel());
+        double orderPrice = cart.get().getQuantity() * bookFromBook.getBookPrice();
+        Order newOrder = new Order(orderPrice, cart.get().getQuantity(), orderDTO.getAddress(), user, bookFromCart, orderDTO.isCancel());
         if (bookFromCart != null && user != null) {
-            if (orderDTO.getQuantity() <= bookFromBook.getBookQuantity()) {
+            if (cart.get().getQuantity() <= bookFromBook.getBookQuantity()) {
                 orderRepository.save(newOrder);
-                cart.get().setQuantity(cart.get().getQuantity() - orderDTO.getQuantity());
-                cartRepository.save(cart.get());
-                int size = cart.get().getQuantity();
-                if (size <= 0) {
-                    cartService.removeFromCart(cart.get().getCartId());
-                }
-                bookFromBook.setBookQuantity(bookFromBook.getBookQuantity() - orderDTO.getQuantity());
+                cartService.removeFromCart(cart.get().getCartId());
+                bookFromBook.setBookQuantity(bookFromBook.getBookQuantity() - cart.get().getQuantity());
                 bookRepository.save(bookFromBook);
                 emailSenderService.sendEmail(user.getEmail(), "Order confirmation Mail", "Your Order is successfully placed.\n Order details\n"
                         + "Book Name :" + newOrder.getBook().getBookName() + "\n"
                         + "Book Description :" + newOrder.getBook().getBookDescription() + "\n"
                         + "Book Price :" + newOrder.getBook().getBookPrice() + "\n"
-                        + "Order Quantity :" + orderDTO.getQuantity()
+                        + "Order Quantity :" + cart.get().getQuantity()
                         + "\n" + "Order Price :" + orderPrice);
                 return "Your Order is placed";
             } else throw new BookStoreException("Requested quantity is not available");
@@ -84,7 +79,7 @@ public class OrderService implements IOrderService {
             if (order.isPresent()) {
                 order.get().setCancel(true);
                 orderRepository.save(order.get());
-                book.get().setBookQuantity(order.get().getQuantity()+ book.get().getBookQuantity());
+                book.get().setBookQuantity(order.get().getQuantity() + book.get().getBookQuantity());
                 bookRepository.save(book.get());
                 emailSenderService.sendEmail(user.getEmail(), "Order details", "your order is cancelled");
                 return "Order cancelled";
